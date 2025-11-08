@@ -1,0 +1,61 @@
+Hospital_ID,Package_ID,Hospital_Name,Hospital_Type,City,Country,Emergency_Number,Address,Distance_km_From_Destination,24x7_Service,Ambulance_Available,Latitude,Longitude,SOS_Response_Time_Min,Languages_Supported,Notes
+H001A,1,Goa General Hospital,Clinic,Goa,India,+46-848906771,"Central Ave, Goa",8.3,Yes,Yes,-59.5292,-108.5459,15,"English, Hindi, Local Language",24x7 emergency trauma unit
+H001B,1,Goa Community Hospital,Public,Goa,India,+84-760528773,"Main Road, Goa",5.3,Yes,Yes,26.8172,-170.7307,14,"English, Hindi, Local Language",Tourist-assist facility
+H001C,1,Goa General Hospital,Private,Goa,India,+99-587396136,"Central Ave, Goa",13.3,Yes,Yes,-50.8258,42.2329,9,"English, Hindi, Local Language",International patient wing
+H002A,2,New Delhi Central Hospital,Clinic,New Delhi,India,+59-738539137,"Central Ave, New Delhi",9.7,Yes,Yes,89.5626,116.8811,9,"English, Hindi, Local Language",Tourist-assist facility
+H002B,2,New Delhi LifeCare Hospital,Private,New Delhi,India,+75-514307003,"Beach Road, New Delhi",14.6,Yes,Yes,18.7834,-172.3749,8,"English, Hindi, Local Language",Quick SOS response center
+H002C,2,New Delhi Community Hospital,Private,New Delhi,India,+52-786802594,"Station Road, New Delhi",7.5,Yes,Yes,9.2506,46.5505,13,"English, Hindi, Local Language",Tourist-assist facility
+H003A,3,Manali Community Hospital,Clinic,Manali,India,+70-476728587,"Hilltop, Manali",9.3,Yes,Yes,80.4932,176.8845,6,"English, Hindi, Local Language",24x7 emergency trauma unit
+H003B,3,Manali General Hospital,Public,Manali,India,+67-183499626,"Central Ave, Manali",5.0,Yes,Yes,-56.6341,-130.7233,14,"English, Hindi, Local Language",Quick SOS response center
+H003C,3,Manali LifeCare Hospital,Private,Manali,India,+71-493739371,"Central Ave, Manali",3.9,Yes,Yes,-33.1994,148.6825,8,"English, Hindi, Local Language",Quick SOS response center
+H004A,4,Bali City Hospital,Private,Bali,Indonesia,+62-920815919,"Central Ave, Bali",4.0,Yes,Yes,-52.4306,-138.3947,5,"English, Bahasa Indonesia",24x7 emergency trauma unit
+H004B,4,Bali Central Hospital,Public,Bali,Indonesia,+34-653528889,"Central Ave, Bali",5.7,Yes,Yes,-33.0126,-9.5807,8,"English, Bahasa Indonesia",International patient wing
+H004C,4,Bali General Hospital,Private,Bali,Indonesia,+1-149127714,"Station Road, Bali",10.2,Yes,Yes,27.5637,-111.144,6,"English, Bahasa Indonesia",24x7 emergency trauma unit
+H005A,5,Paris LifeCare Hospital,Public,Paris,France,+58-567946229,"Central Ave, Paris",7.6,Yes,Yes,54.6189,-122.3774,6,"English, French",International patient wing
+H005B,5,Paris General Hospital,Clinic,Paris,France,+57-487215356,"Beach Road, Paris",6.9,Yes,Yes,-87.8983,46.9948,12,"English, French",Tourist-assist facility
+H005C,5,Paris General Hospital,Private,Paris,France,+16-830420083,"Beach Road, Paris",8.0,Yes,Yes,-70.1532,133.6881,11,"English, French",Tourist-assist facility
+H006A,6,Zurich City Hospital,Private,Zurich,Switzerland,+79-383137991,"Main Road, Zurich",3.5,Yes,Yes,45.4585,167.7785,10,"English, German, French",Tourist-assist facility
+H006B,6,Zurich LifeCare Hospital,Clinic,Zurich,Switzerland,+20-454123081,"Main Road, Zurich",12.6,Yes,Yes,26.057,-100.2991,8,"English, German, French",Quick SOS response center
+H006C,6,Zurich Central Hospital,Private,Zurich,Switzerland,+61-679165230,"Hilltop, Zurich",3.7,Yes,Yes,55.7276,-149.4062,5,"English, German, French",24x7 emergency trauma unit
+H007A,7,Dubai Community Hospital,Public,Dubai,UAE,+29-255344584,"Station Road, Dubai",10.7,Yes,Yes,42.9043,103.321,9,"English, Arabic",Tourist-assist facility
+H007B,7,Dubai LifeCare Hospital,Clinic,Dubai,UAE,+13-852865967,"Station Road, Dubai",9.9,Yes,Yes,-21.7094,104.4369,14,"English, Arabic",Quick SOS response center
+H007C,7,Dubai General Hospital,Private,Dubai,UAE,+31-975426686,"Central Ave, Dubai",13.4,Yes,Yes,-30.0355,13.4341,14,"English, Arabic",Quick SOS response center
+H008A,8,Kochi Central Hospital,Clinic,Kochi,India,+89-102669209,"Beach Road, Kochi",2.9,Yes,Yes,72.9987,-64.9594,15,"English, Hindi, Local Language",Quick SOS response center
+H008B,8,Kochi City Hospital,Private,Kochi,India,+36-380282390,"Beach Road, Kochi",11.4,Yes,Yes,74.1053,67.7056,10,"English, Hindi, Local Language",24x7 emergency trauma unit
+H008C,8,Kochi Central Hospital,Clinic,Kochi,India,+89-576501482,"Beach Road, Kochi",6.3,Yes,Yes,11.4748,145.3166,7,"English, Hindi, Local Language",International patient wing
+H009A,9,Tokyo LifeCare Hospital,Private,Tokyo,Japan,+81-889026387,"Main Road, Tokyo",6.7,Yes,Yes,32.0169,-107.2102,5,"English, Japanese",24x7 emergency trauma unit
+H009B,9,Tokyo City Hospital,Clinic,Tokyo,Japan,+35-393493521,"Station Road, Tokyo",4.6,Yes,Yes,-40.8506,-99.3479,6,"English, Japanese",International patient wing
+H009C,9,Tokyo LifeCare Hospital,Public,Tokyo,Japan,+65-532495882,"Hilltop, Tokyo",3.4,Yes,Yes,-29.6373,176.7911,7,"English, Japanese",International patient wing
+H010A,10,New York General Hospital,Public,New York,USA,+90-266609059,"Hilltop, New York",9.5,Yes,Yes,44.9977,13.3538,11,"English, Spanish",International patient wing
+H010B,10,New York Community Hospital,Private,New York,USA,+4-642061224,"Station Road, New York",13.5,Yes,Yes,-82.6587,2.3874,12,"English, Spanish",24x7 emergency trauma unit
+H010C,10,New York City Hospital,Private,New York,USA,+48-308257773,"Hilltop, New York",14.3,Yes,Yes,68.365,21.9271,14,"English, Spanish",International patient wing
+H011A,11,Leh General Hospital,Private,Leh,India,+38-400184902,"Beach Road, Leh",13.2,Yes,Yes,-9.6153,83.1138,15,"English, Hindi, Local Language",International patient wing
+H011B,11,Leh Community Hospital,Public,Leh,India,+96-820335141,"Central Ave, Leh",14.5,Yes,Yes,10.2866,-169.2145,5,"English, Hindi, Local Language",Quick SOS response center
+H011C,11,Leh General Hospital,Private,Leh,India,+16-148768814,"Station Road, Leh",4.0,Yes,Yes,48.2026,55.7974,12,"English, Hindi, Local Language",International patient wing
+H012A,12,Phuket General Hospital,Public,Phuket,Thailand,+30-519012954,"Main Road, Phuket",6.4,Yes,Yes,-50.496,-71.5004,11,"English, Thai",Tourist-assist facility
+H012B,12,Phuket City Hospital,Private,Phuket,Thailand,+85-553214092,"Central Ave, Phuket",3.9,Yes,Yes,51.6509,58.8387,11,"English, Thai",Tourist-assist facility
+H012C,12,Phuket Community Hospital,Clinic,Phuket,Thailand,+52-764965359,"Main Road, Phuket",12.6,Yes,Yes,23.078,-103.4329,5,"English, Thai",24x7 emergency trauma unit
+H013A,13,Munnar Community Hospital,Private,Munnar,India,+36-529611499,"Beach Road, Munnar",11.9,Yes,Yes,63.0987,-93.5589,7,"English, Hindi, Local Language",International patient wing
+H013B,13,Munnar City Hospital,Public,Munnar,India,+76-933983861,"Central Ave, Munnar",9.3,Yes,Yes,2.489,132.1467,14,"English, Hindi, Local Language",Tourist-assist facility
+H013C,13,Munnar General Hospital,Private,Munnar,India,+18-987841891,"Main Road, Munnar",10.5,Yes,Yes,-38.3348,-18.2917,8,"English, Hindi, Local Language",Tourist-assist facility
+H014A,14,Malé General Hospital,Public,Malé,Maldives,+90-585707952,"Hilltop, Malé",5.3,Yes,Yes,-33.1395,-2.5727,12,"English, Dhivehi",International patient wing
+H014B,14,Malé LifeCare Hospital,Public,Malé,Maldives,+51-474206248,"Station Road, Malé",7.9,Yes,Yes,3.4244,-98.0383,10,"English, Dhivehi",Tourist-assist facility
+H014C,14,Malé Central Hospital,Clinic,Malé,Maldives,+49-959083513,"Station Road, Malé",11.0,Yes,Yes,2.8425,-151.3911,6,"English, Dhivehi",Quick SOS response center
+H015A,15,London LifeCare Hospital,Private,London,UK,+11-930952509,"Beach Road, London",3.5,Yes,Yes,-23.7323,141.3472,9,English,24x7 emergency trauma unit
+H015B,15,London Central Hospital,Clinic,London,UK,+48-417308177,"Main Road, London",9.9,Yes,Yes,59.6962,-159.249,8,English,International patient wing
+H015C,15,London LifeCare Hospital,Private,London,UK,+89-511273331,"Station Road, London",7.7,Yes,Yes,19.5357,-27.2973,8,English,International patient wing
+H016A,16,Singapore General Hospital,Clinic,Singapore,Singapore,+49-351552618,"Station Road, Singapore",8.4,Yes,Yes,-59.7575,146.8948,14,"English, Mandarin, Malay",International patient wing
+H016B,16,Singapore City Hospital,Clinic,Singapore,Singapore,+59-489751794,"Beach Road, Singapore",5.7,Yes,Yes,82.9404,42.0855,12,"English, Mandarin, Malay",Tourist-assist facility
+H016C,16,Singapore City Hospital,Public,Singapore,Singapore,+88-669336027,"Station Road, Singapore",8.7,Yes,Yes,81.54,131.8278,15,"English, Mandarin, Malay",International patient wing
+H017A,17,Jodhpur General Hospital,Public,Jodhpur,India,+67-798631386,"Central Ave, Jodhpur",5.2,Yes,Yes,-26.2533,9.5239,8,"English, Hindi, Local Language",International patient wing
+H017B,17,Jodhpur General Hospital,Clinic,Jodhpur,India,+15-253427325,"Hilltop, Jodhpur",7.9,Yes,Yes,-4.8507,16.7273,8,"English, Hindi, Local Language",24x7 emergency trauma unit
+H017C,17,Jodhpur Community Hospital,Private,Jodhpur,India,+7-845984531,"Station Road, Jodhpur",10.9,Yes,Yes,17.476,-4.6237,5,"English, Hindi, Local Language",Tourist-assist facility
+H018A,18,Port Blair LifeCare Hospital,Public,Port Blair,India,+5-861476890,"Main Road, Port Blair",12.4,Yes,Yes,-66.3115,-161.3439,7,"English, Hindi, Local Language",Tourist-assist facility
+H018B,18,Port Blair LifeCare Hospital,Clinic,Port Blair,India,+65-831049601,"Station Road, Port Blair",10.9,Yes,Yes,-2.5014,-158.8225,8,"English, Hindi, Local Language",International patient wing
+H018C,18,Port Blair Central Hospital,Public,Port Blair,India,+6-412692584,"Main Road, Port Blair",4.9,Yes,Yes,66.4524,-129.4766,12,"English, Hindi, Local Language",24x7 emergency trauma unit
+H019A,19,Rome General Hospital,Clinic,Rome,Italy,+65-817054533,"Central Ave, Rome",6.4,Yes,Yes,42.124,164.0438,15,"English, Italian",Tourist-assist facility
+H019B,19,Rome City Hospital,Public,Rome,Italy,+11-731911554,"Hilltop, Rome",13.8,Yes,Yes,-20.2956,-12.234,12,"English, Italian",Quick SOS response center
+H019C,19,Rome LifeCare Hospital,Public,Rome,Italy,+29-191695372,"Hilltop, Rome",13.7,Yes,Yes,-74.1682,126.6961,9,"English, Italian",24x7 emergency trauma unit
+H020A,20,Colombo Community Hospital,Private,Colombo,Sri Lanka,+79-156297680,"Central Ave, Colombo",2.4,Yes,Yes,-12.8353,143.4893,13,"English, Sinhala, Tamil",Tourist-assist facility
+H020B,20,Colombo Community Hospital,Clinic,Colombo,Sri Lanka,+58-602613869,"Main Road, Colombo",5.8,Yes,Yes,15.3057,-44.8042,10,"English, Sinhala, Tamil",Tourist-assist facility
+H020C,20,Colombo LifeCare Hospital,Private,Colombo,Sri Lanka,+37-470827122,"Station Road, Colombo",11.1,Yes,Yes,32.4751,-99.8638,14,"English, Sinhala, Tamil",Quick SOS response center

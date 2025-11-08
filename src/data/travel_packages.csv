@@ -1,0 +1,21 @@
+Package_ID,Package_Name,Destination,Country,Duration_Days,Price_USD,Accommodation_Type,Transport_Mode,Season,Accessibility_Level,Description,Rating,Available_Slots,Guide_Included,Start_Date,End_Date,Category,Discount_Percent,Meals_Included,Contact_Number
+1,Goa Beach Escape,Goa,India,5,350,Resort,Flight,Summer,Medium,Relaxing beach holiday with water sports and nightlife.,4.3,15,No,12/5/2025,12/10/2025,Beach,10,Yes,-9876543119
+2,Golden Triangle Tour,Delhi-Agra-Jaipur,India,6,500,Hotel,Bus,Winter,High,Historic circuit covering Taj Mahal and royal palaces.,4.6,10,Yes,11/20/2025,11/26/2025,Cultural,5,Yes,-9123456698
+3,Himalayan Adventure,Manali,India,7,600,Guesthouse,Car,Winter,Low,Trekking and camping in the Himalayas.,4.7,8,Yes,1/10/2026,1/17/2026,Adventure,15,No,-9988776564
+4,Bali Bliss,Bali,Indonesia,5,850,Villa,Flight,All,Medium,"Island retreat with temples, beaches, and cultural shows.",4.8,20,No,2/15/2026,2/20/2026,Romantic,10,Yes,-8123456727
+5,Paris Romance,Paris,France,4,1200,Hotel,Flight,Spring,High,Romantic getaway with Eiffel Tower and Seine cruise.,4.9,12,Yes,3/10/2026,3/14/2026,Romantic,8,Yes,-612345645
+6,Swiss Alps Explorer,Zurich-Swiss Alps,Switzerland,7,1500,Hotel,Train,Winter,Medium,Scenic mountain trip with skiing and chocolate tours.,4.8,9,Yes,1/25/2026,2/1/2026,Adventure,12,Yes,-789456082
+7,Desert Safari,Dubai,UAE,3,700,Resort,Flight,Winter,Medium,"Dune bashing, camel rides, and desert camping.",4.5,18,Yes,12/15/2025,12/18/2025,Adventure,10,Yes,-501233596
+8,Kerala Backwaters,Alleppey,India,4,400,Houseboat,Car,Monsoon,High,Peaceful cruise through palm-lined backwaters.,4.4,14,No,11/25/2025,11/29/2025,Nature,5,Yes,-9345678810
+9,Tokyo Tech Tour,Tokyo,Japan,6,1400,Hotel,Flight,All,Medium,Modern city tour with tech museums and anime spots.,4.7,11,Yes,2/20/2026,2/26/2026,Cultural,10,No,-9012345597
+10,New York Explorer,New York,USA,5,1300,Hotel,Flight,All,High,"City landmarks, shopping, and Broadway shows.",4.6,13,Yes,12/10/2025,12/15/2025,Urban,7,Yes,-2125551233
+11,Leh-Ladakh Expedition,Leh,India,8,750,Camp,Jeep,Summer,Low,High-altitude biking and monasteries.,4.9,7,Yes,5/1/2026,5/9/2026,Adventure,10,No,-9765432018
+12,Thailand Fun Package,Bangkok-Phuket,Thailand,6,800,Resort,Flight,All,Medium,City exploration and island hopping.,4.7,16,Yes,3/5/2026,3/11/2026,Family,10,Yes,-812345612
+13,Munnar Hills Retreat,Munnar,India,4,300,Resort,Car,Monsoon,High,Tea plantations and scenic viewpoints.,4.3,19,No,11/30/2025,12/4/2025,Nature,8,Yes,-9001122243
+14,Maldives Luxury Stay,Malé,Maldives,5,2000,Overwater Villa,Flight,Winter,Medium,Private beach villas with snorkeling and spa.,4.9,6,Yes,1/15/2026,1/20/2026,Luxury,15,Yes,-7711385
+15,London Heritage Tour,London,UK,5,1100,Hotel,Flight,Spring,High,"Museums, royal attractions, and Thames cruise.",4.8,10,Yes,4/1/2026,4/6/2026,Cultural,5,Yes,-7123456745
+16,Singapore Family Trip,Singapore,Singapore,4,950,Hotel,Flight,All,High,Family-friendly attractions and shopping.,4.6,18,Yes,12/20/2025,12/24/2025,Family,10,Yes,-81234502
+17,Rajasthan Royal Tour,Jaipur-Jodhpur-Udaipur,India,7,650,Palace Hotel,Bus,Winter,Medium,"Fortresses, palaces, and traditional cuisine.",4.7,10,Yes,11/28/2025,12/5/2025,Cultural,5,Yes,-9898989807
+18,Andaman Islands Getaway,Port Blair,India,5,550,Resort,Flight,Summer,Medium,"Coral reefs, scuba diving, and beaches.",4.5,17,No,3/20/2026,3/25/2026,Beach,8,Yes,-9123456699
+19,Italy Cultural Trail,Rome-Venice-Florence,Italy,8,1600,Hotel,Train,Spring,High,Historic landmarks and culinary experiences.,4.9,9,Yes,4/10/2026,4/18/2026,Cultural,10,Yes,-612345639
+20,Sri Lanka Explorer,Colombo-Kandy-Sigiriya,Sri Lanka,6,700,Hotel,Flight,All,Medium,"Temples, tea gardens, and wildlife safaris.",4.6,15,Yes,2/5/2026,2/11/2026,Cultural,10,Yes,-712345584
