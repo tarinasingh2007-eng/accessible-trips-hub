@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { parsePackagesCSV } from "@/lib/csvParser";
 import type { TravelPackage } from "@/types/travel";
 import PackageCard from "@/components/PackageCard";
 import SearchFilters from "@/components/SearchFilters";
 import { Button } from "@/components/ui/button";
-import { Heart, Shield, Accessibility, Search } from "lucide-react";
+import { Heart, Shield, Accessibility, Search, User, Calendar, LogOut } from "lucide-react";
 import heroImage from "@/assets/hero-travel.jpg";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Index = () => {
+  const { user, signOut } = useAuth();
   const [packages, setPackages] = useState<TravelPackage[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<TravelPackage[]>([]);
+  const [favorites, setFavorites] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filter states
@@ -33,7 +44,26 @@ const Index = () => {
     };
 
     loadPackages();
-  }, []);
+    if (user) {
+      loadFavorites();
+    }
+  }, [user]);
+
+  const loadFavorites = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('favorites')
+        .select('package_id')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      setFavorites(data?.map(f => f.package_id) || []);
+    } catch (error: any) {
+      console.error('Error loading favorites:', error);
+    }
+  };
 
   useEffect(() => {
     let filtered = packages;
@@ -71,6 +101,50 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Navigation */}
+      <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Travel Assist</h1>
+          <div className="flex items-center gap-4">
+            {user ? (
+              <>
+                <Link to="/favorites" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+                  <Heart className="h-4 w-4" />
+                  <span className="hidden sm:inline">Favorites</span>
+                </Link>
+                <Link to="/bookings" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+                  <Calendar className="h-4 w-4" />
+                  <span className="hidden sm:inline">My Bookings</span>
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <User className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                        <User className="h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 cursor-pointer">
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <Button asChild>
+                <Link to="/auth">Sign In</Link>
+              </Button>
+            )}
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
         <div
@@ -175,7 +249,12 @@ const Index = () => {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
               {filteredPackages.map((pkg) => (
-                <PackageCard key={pkg.Package_ID} package={pkg} />
+                <PackageCard
+                  key={pkg.Package_ID}
+                  package={pkg}
+                  isFavorite={favorites.includes(pkg.Package_ID)}
+                  onFavoriteChange={loadFavorites}
+                />
               ))}
             </div>
           )}

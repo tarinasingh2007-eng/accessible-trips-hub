@@ -1,15 +1,24 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, Users, Star, Accessibility, Plane } from "lucide-react";
-import type { TravelPackage } from "@/types/travel";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { TravelPackage } from '@/types/travel';
+import { Star, MapPin, Calendar, Users, Accessibility, Plane, Heart } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface PackageCardProps {
   package: TravelPackage;
+  isFavorite?: boolean;
+  onFavoriteChange?: () => void;
 }
 
-const PackageCard = ({ package: pkg }: PackageCardProps) => {
+export default function PackageCard({ package: pkg, isFavorite: initialFavorite = false, onFavoriteChange }: PackageCardProps) {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [isFavorite, setIsFavorite] = useState(initialFavorite);
   const discountedPrice = pkg.Price_USD - (pkg.Price_USD * pkg.Discount_Percent / 100);
   
   const accessibilityColor = {
@@ -18,10 +27,58 @@ const PackageCard = ({ package: pkg }: PackageCardProps) => {
     Low: "bg-muted text-muted-foreground"
   }[pkg.Accessibility_Level] || "bg-muted";
 
+  useEffect(() => {
+    setIsFavorite(initialFavorite);
+  }, [initialFavorite]);
+
+  const toggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to add favorites",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        await supabase
+          .from('favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('package_id', pkg.Package_ID);
+      } else {
+        await supabase
+          .from('favorites')
+          .insert({ user_id: user.id, package_id: pkg.Package_ID });
+      }
+      setIsFavorite(!isFavorite);
+      onFavoriteChange?.();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-2 right-2 z-10"
+        onClick={toggleFavorite}
+      >
+        <Heart className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+      </Button>
+
       <div className="relative h-48 bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-        <div className="absolute top-3 right-3 flex gap-2">
+        <div className="absolute top-3 left-3 flex gap-2">
           {pkg.Discount_Percent > 0 && (
             <Badge className="bg-secondary text-secondary-foreground">
               {pkg.Discount_Percent}% OFF
@@ -91,6 +148,4 @@ const PackageCard = ({ package: pkg }: PackageCardProps) => {
       </CardFooter>
     </Card>
   );
-};
-
-export default PackageCard;
+}

@@ -23,6 +23,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import BookingDialog from "@/components/BookingDialog";
 
 const PackageDetails = () => {
   const { id } = useParams();
@@ -304,9 +305,7 @@ const PackageDetails = () => {
                     </div>
                   </div>
 
-                  <Button className="w-full" size="lg">
-                    Book Now
-                  </Button>
+                  <BookingDialog package={pkg} />
                   
                   <p className="text-xs text-center text-muted-foreground mt-4">
                     {pkg.Available_Slots} slots remaining
