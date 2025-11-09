@@ -14,16 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          booking_date: string | null
+          created_at: string | null
+          id: string
+          number_of_travelers: number
+          package_id: number
+          package_name: string
+          special_requirements: string | null
+          status: string | null
+          total_price: number
+          travel_end_date: string
+          travel_start_date: string
+          user_id: string
+        }
+        Insert: {
+          booking_date?: string | null
+          created_at?: string | null
+          id?: string
+          number_of_travelers?: number
+          package_id: number
+          package_name: string
+          special_requirements?: string | null
+          status?: string | null
+          total_price: number
+          travel_end_date: string
+          travel_start_date: string
+          user_id: string
+        }
+        Update: {
+          booking_date?: string | null
+          created_at?: string | null
+          id?: string
+          number_of_travelers?: number
+          package_id?: number
+          package_name?: string
+          special_requirements?: string | null
+          status?: string | null
+          total_price?: number
+          travel_end_date?: string
+          travel_start_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      favorites: {
+        Row: {
+          created_at: string | null
+          id: string
+          package_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          package_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          package_id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          accessibility_needs: string | null
+          age: number | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          disability_type: string | null
+          emergency_contact_name: string | null
+          emergency_contact_number: string | null
+          full_name: string | null
+          gender: string | null
+          id: string
+          medical_conditions: string | null
+          phone_number: string | null
+          preferred_accommodation: string | null
+          preferred_transport: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          accessibility_needs?: string | null
+          age?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          disability_type?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_number?: string | null
+          full_name?: string | null
+          gender?: string | null
+          id: string
+          medical_conditions?: string | null
+          phone_number?: string | null
+          preferred_accommodation?: string | null
+          preferred_transport?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          accessibility_needs?: string | null
+          age?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          disability_type?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_number?: string | null
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          medical_conditions?: string | null
+          phone_number?: string | null
+          preferred_accommodation?: string | null
+          preferred_transport?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +296,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
