@@ -34,6 +34,7 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
     startWakeWordDetection,
     stopWakeWordDetection,
     wakeWordActive,
+    supported,
   } = useVoiceAssistant();
 
   // Simple AI response logic (no external API needed)
@@ -95,12 +96,18 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
   }, [speak]);
 
   useEffect(() => {
+    if (!supported) {
+      // Ensure detection is stopped when not supported
+      stopWakeWordDetection();
+      return;
+    }
+
     if (wakeWordEnabled && !isOpen) {
       startWakeWordDetection(handleWakeWord);
     } else {
       stopWakeWordDetection();
     }
-    
+
     return () => stopWakeWordDetection();
   }, [wakeWordEnabled, isOpen, startWakeWordDetection, stopWakeWordDetection, handleWakeWord]);
 
@@ -157,6 +164,11 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
           </CardHeader>
           
           <CardContent className="space-y-4">
+            {!supported && (
+              <div className="p-2 bg-destructive/10 text-destructive rounded-md text-sm">
+                Speech recognition is not available in this browser. The voice features are disabled.
+              </div>
+            )}
             {/* Settings Panel */}
             {showSettings && (
               <div className="space-y-4 p-3 bg-muted rounded-lg">
@@ -212,7 +224,7 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
 
                 <div className="flex items-center justify-between">
                   <Label>Wake Word ("Hey Knight Guide")</Label>
-                  <Switch checked={wakeWordEnabled} onCheckedChange={setWakeWordEnabled} />
+                  <Switch checked={wakeWordEnabled} onCheckedChange={setWakeWordEnabled} disabled={!supported} />
                 </div>
                 
                 <div className="flex justify-end pt-2">
@@ -266,8 +278,16 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
                 size="lg"
                 className="rounded-full h-12 w-12"
                 onClick={handleMicClick}
+                disabled={!supported}
+                title={!supported ? 'Speech recognition not supported in this browser' : undefined}
               >
-                {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                {!supported ? (
+                  <MicOff className="h-5 w-5" />
+                ) : isListening ? (
+                  <MicOff className="h-5 w-5" />
+                ) : (
+                  <Mic className="h-5 w-5" />
+                )}
               </Button>
               
               {isSpeaking && (
