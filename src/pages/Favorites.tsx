@@ -36,7 +36,9 @@ export default function Favorites() {
       if (error) throw error;
       setFavorites(data?.map(f => f.package_id) || []);
     } catch (error: any) {
-      console.error('Error loading favorites:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error loading favorites:', error);
+      }
     }
   };
 
@@ -46,7 +48,9 @@ export default function Favorites() {
       setPackages(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error loading packages:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error loading packages:', error);
+      }
       setLoading(false);
     }
   };

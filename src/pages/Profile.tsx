@@ -72,7 +72,9 @@ export default function Profile() {
         setProfile(data);
       }
     } catch (error: any) {
-      console.error('Error loading profile:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error loading profile:', error);
+      }
     } finally {
       setLoading(false);
     }

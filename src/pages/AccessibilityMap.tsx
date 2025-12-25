@@ -97,7 +97,9 @@ const AccessibilityMap: React.FC = () => {
           setPlaces(MOCK_PLACES);
         },
         (error) => {
-          console.error('Geolocation error:', error);
+          if (import.meta.env.DEV) {
+            console.error('Geolocation error:', error);
+          }
           setIsLoadingLocation(false);
           toast({
             variant: "destructive",
