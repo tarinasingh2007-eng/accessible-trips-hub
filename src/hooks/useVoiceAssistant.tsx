@@ -42,6 +42,7 @@ export const useVoiceAssistant = () => {
     rate: 1,
     pitch: 1,
   });
+  const [supported, setSupported] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -49,10 +50,14 @@ export const useVoiceAssistant = () => {
   const [wakeWordActive, setWakeWordActive] = useState(false);
   
   const recognitionRef = useRef<any>(null);
+  const wakeRecognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const hasSpeechRecognition = !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+      setSupported(hasSpeechRecognition);
+
       synthRef.current = window.speechSynthesis;
       
       const loadVoices = () => {
@@ -65,6 +70,13 @@ export const useVoiceAssistant = () => {
 
       return () => {
         synthRef.current?.removeEventListener('voiceschanged', loadVoices);
+        // stop any active recognizers on unmount
+        try {
+          recognitionRef.current?.stop();
+        } catch (e) {}
+        try {
+          wakeRecognitionRef.current?.stop();
+        } catch (e) {}
       };
     }
   }, []);
@@ -120,14 +132,15 @@ export const useVoiceAssistant = () => {
   }, []);
 
   const startListening = useCallback((onResult?: (text: string) => void) => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
       console.error('Speech recognition not supported');
+      setSupported(false);
       return;
     }
 
-    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    // use a dedicated recognizer for active listening
     recognitionRef.current = new SpeechRecognitionAPI();
-    
     recognitionRef.current.continuous = true;
     recognitionRef.current.interimResults = true;
     recognitionRef.current.lang = settings.language;
@@ -156,7 +169,11 @@ export const useVoiceAssistant = () => {
     recognitionRef.current.onend = () => setIsListening(false);
     recognitionRef.current.onerror = () => setIsListening(false);
 
-    recognitionRef.current.start();
+    try {
+      recognitionRef.current.start();
+    } catch (e) {
+      // ignore if already started
+    }
   }, [settings.language]);
 
   const stopListening = useCallback(() => {
@@ -165,19 +182,20 @@ export const useVoiceAssistant = () => {
   }, []);
 
   const startWakeWordDetection = useCallback((onWakeWord: () => void) => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
       console.error('Speech recognition not supported');
+      setSupported(false);
       return;
     }
 
-    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    recognitionRef.current = new SpeechRecognitionAPI();
-    
-    recognitionRef.current.continuous = true;
-    recognitionRef.current.interimResults = true;
-    recognitionRef.current.lang = settings.language;
+    // use a separate recognizer for wake-word detection so it doesn't conflict
+    wakeRecognitionRef.current = new SpeechRecognitionAPI();
+    wakeRecognitionRef.current.continuous = true;
+    wakeRecognitionRef.current.interimResults = true;
+    wakeRecognitionRef.current.lang = settings.language;
 
-    recognitionRef.current.onresult = (event: any) => {
+    wakeRecognitionRef.current.onresult = (event: any) => {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript.toLowerCase();
         if (transcript.includes('hey knight guide') || transcript.includes('hey night guide')) {
@@ -187,24 +205,24 @@ export const useVoiceAssistant = () => {
       }
     };
 
-    recognitionRef.current.onstart = () => setWakeWordActive(true);
-    recognitionRef.current.onend = () => {
+    wakeRecognitionRef.current.onstart = () => setWakeWordActive(true);
+    wakeRecognitionRef.current.onend = () => {
       // Restart if still active
-      if (wakeWordActive && recognitionRef.current) {
+      if (wakeWordActive && wakeRecognitionRef.current) {
         try {
-          recognitionRef.current.start();
-        } catch (e) {
-          // Already started
-        }
+          wakeRecognitionRef.current.start();
+        } catch (e) {}
       }
     };
 
-    recognitionRef.current.start();
+    try {
+      wakeRecognitionRef.current.start();
+    } catch (e) {}
   }, [settings.language, wakeWordActive]);
 
   const stopWakeWordDetection = useCallback(() => {
     setWakeWordActive(false);
-    recognitionRef.current?.stop();
+    wakeRecognitionRef.current?.stop();
   }, []);
 
   return {
@@ -222,5 +240,6 @@ export const useVoiceAssistant = () => {
     stopWakeWordDetection,
     wakeWordActive,
     availableVoices,
+    supported,
   };
 };
