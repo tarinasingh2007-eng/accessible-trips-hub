@@ -166,22 +166,31 @@ export const useVoiceAssistant = () => {
       }
     };
 
-    recognitionRef.current.onstart = () => setIsListening(true);
+    recognitionRef.current.onstart = () => {
+      console.log('[SpeechRecognition] started');
+      setIsListening(true);
+    };
     recognitionRef.current.onend = () => {
+      console.log('[SpeechRecognition] ended');
       setIsListening(false);
-      setListeningError('');
     };
     recognitionRef.current.onerror = (event: any) => {
       const err = event.error || 'unknown error';
-      console.error('SpeechRecognition error:', err);
-      setListeningError(err);
+      console.error('[SpeechRecognition] error event:', err);
+      setListeningError(`Error: ${err}`);
+      setIsListening(false);
+    };
+    recognitionRef.current.onabort = () => {
+      console.warn('[SpeechRecognition] aborted');
       setIsListening(false);
     };
 
     try {
+      console.log('[SpeechRecognition] calling start()');
       recognitionRef.current.start();
     } catch (e) {
-      // ignore if already started
+      console.error('[SpeechRecognition] start() threw exception:', e);
+      setListeningError(`Exception: ${e}`);
     }
   }, [settings.language]);
 
