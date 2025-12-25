@@ -10,7 +10,11 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import MyBookings from "./pages/MyBookings";
 import Favorites from "./pages/Favorites";
+import Translation from "./pages/Translation";
+import AccessibilityMap from "./pages/AccessibilityMap";
+import HealthVitals from "./pages/HealthVitals";
 import NotFound from "./pages/NotFound";
+import VoiceAssistantWidget from "./components/VoiceAssistantWidget";
 
 const queryClient = new QueryClient();
 
@@ -28,9 +32,13 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/bookings" element={<MyBookings />} />
             <Route path="/favorites" element={<Favorites />} />
+            <Route path="/translation" element={<Translation />} />
+            <Route path="/accessibility-map" element={<AccessibilityMap />} />
+            <Route path="/health-vitals" element={<HealthVitals />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <VoiceAssistantWidget />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
