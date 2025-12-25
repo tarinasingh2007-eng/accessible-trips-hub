@@ -19,6 +19,7 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
   const [conversation, setConversation] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [wakeWordEnabled, setWakeWordEnabled] = useState(false);
+  const [inputText, setInputText] = useState('');
 
   const {
     settings,
@@ -89,6 +90,12 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
 
     setTranscript('');
   }, [generateResponse, speak, setTranscript]);
+
+  const handleSendText = useCallback(() => {
+    if (!inputText.trim()) return;
+    handleUserMessage(inputText.trim());
+    setInputText('');
+  }, [inputText, handleUserMessage]);
 
   const handleWakeWord = useCallback(() => {
     setIsOpen(true);
@@ -270,6 +277,21 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
                 {transcript}
               </div>
             )}
+
+            {/* Text input fallback / manual message */}
+            <div className="flex gap-2 items-center">
+              <input
+                aria-label="Type a message"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { handleSendText(); } }}
+                className="flex-1 px-3 py-2 rounded-md border bg-background text-sm"
+                placeholder={supported ? 'Type a message or tap the mic' : 'Type a message (voice unavailable)'}
+              />
+              <Button size="sm" onClick={handleSendText} disabled={!inputText.trim()}>
+                Send
+              </Button>
+            </div>
 
             {/* Controls */}
             <div className="flex justify-center gap-4">
