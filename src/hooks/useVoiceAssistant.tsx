@@ -48,6 +48,7 @@ export const useVoiceAssistant = () => {
   const [transcript, setTranscript] = useState('');
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [wakeWordActive, setWakeWordActive] = useState(false);
+  const [listeningError, setListeningError] = useState<string>('');
   
   const recognitionRef = useRef<any>(null);
   const wakeRecognitionRef = useRef<any>(null);
@@ -166,8 +167,16 @@ export const useVoiceAssistant = () => {
     };
 
     recognitionRef.current.onstart = () => setIsListening(true);
-    recognitionRef.current.onend = () => setIsListening(false);
-    recognitionRef.current.onerror = () => setIsListening(false);
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+      setListeningError('');
+    };
+    recognitionRef.current.onerror = (event: any) => {
+      const err = event.error || 'unknown error';
+      console.error('SpeechRecognition error:', err);
+      setListeningError(err);
+      setIsListening(false);
+    };
 
     try {
       recognitionRef.current.start();
@@ -241,5 +250,7 @@ export const useVoiceAssistant = () => {
     wakeWordActive,
     availableVoices,
     supported,
+    listeningError,
+    setListeningError,
   };
 };

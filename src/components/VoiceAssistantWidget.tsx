@@ -36,6 +36,8 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
     stopWakeWordDetection,
     wakeWordActive,
     supported,
+    listeningError,
+    setListeningError,
   } = useVoiceAssistant();
 
   // Simple AI response logic (no external API needed)
@@ -275,6 +277,13 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
               <div className="p-2 bg-muted rounded-lg text-sm">
                 <span className="text-muted-foreground">Hearing: </span>
                 {transcript}
+              </div>
+            )}
+
+            {/* Error Display */}
+            {listeningError && (
+              <div className="p-2 bg-destructive/10 text-destructive text-sm rounded-lg">
+                Mic error: {listeningError}
               </div>
             )}
 
