@@ -48,7 +48,9 @@ export default function MyBookings() {
       if (error) throw error;
       setBookings(data || []);
     } catch (error: any) {
-      console.error('Error loading bookings:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error loading bookings:', error);
+      }
     } finally {
       setLoading(false);
     }

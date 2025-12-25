@@ -49,7 +49,9 @@ const PackageDetails = () => {
         setPkg(foundPackage || null);
         setHospitals(relatedHospitals);
       } catch (error) {
-        console.error("Error loading data:", error);
+        if (import.meta.env.DEV) {
+          console.error("Error loading data:", error);
+        }
         toast({
           title: "Error",
           description: "Failed to load package details",

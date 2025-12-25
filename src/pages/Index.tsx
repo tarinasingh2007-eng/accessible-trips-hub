@@ -38,7 +38,9 @@ const Index = () => {
         setPackages(data);
         setFilteredPackages(data);
       } catch (error) {
-        console.error("Error loading packages:", error);
+        if (import.meta.env.DEV) {
+          console.error("Error loading packages:", error);
+        }
       } finally {
         setLoading(false);
       }
@@ -62,7 +64,9 @@ const Index = () => {
       if (error) throw error;
       setFavorites(data?.map(f => f.package_id) || []);
     } catch (error: any) {
-      console.error('Error loading favorites:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error loading favorites:', error);
+      }
     }
   };
 
