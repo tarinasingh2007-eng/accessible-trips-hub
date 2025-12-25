@@ -19,6 +19,7 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
   const [conversation, setConversation] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [wakeWordEnabled, setWakeWordEnabled] = useState(false);
+  const [inputText, setInputText] = useState('');
 
   const {
     settings,
@@ -34,6 +35,9 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
     startWakeWordDetection,
     stopWakeWordDetection,
     wakeWordActive,
+    supported,
+    listeningError,
+    setListeningError,
   } = useVoiceAssistant();
 
   // Simple AI response logic (no external API needed)
@@ -89,18 +93,30 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
     setTranscript('');
   }, [generateResponse, speak, setTranscript]);
 
+  const handleSendText = useCallback(() => {
+    if (!inputText.trim()) return;
+    handleUserMessage(inputText.trim());
+    setInputText('');
+  }, [inputText, handleUserMessage]);
+
   const handleWakeWord = useCallback(() => {
     setIsOpen(true);
     speak("Hi! I'm Knight Guide. How can I help you today?");
   }, [speak]);
 
   useEffect(() => {
+    if (!supported) {
+      // Ensure detection is stopped when not supported
+      stopWakeWordDetection();
+      return;
+    }
+
     if (wakeWordEnabled && !isOpen) {
       startWakeWordDetection(handleWakeWord);
     } else {
       stopWakeWordDetection();
     }
-    
+
     return () => stopWakeWordDetection();
   }, [wakeWordEnabled, isOpen, startWakeWordDetection, stopWakeWordDetection, handleWakeWord]);
 
@@ -157,6 +173,11 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
           </CardHeader>
           
           <CardContent className="space-y-4">
+            {!supported && (
+              <div className="p-2 bg-destructive/10 text-destructive rounded-md text-sm">
+                Speech recognition is not available in this browser. The voice features are disabled.
+              </div>
+            )}
             {/* Settings Panel */}
             {showSettings && (
               <div className="space-y-4 p-3 bg-muted rounded-lg">
@@ -212,7 +233,7 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
 
                 <div className="flex items-center justify-between">
                   <Label>Wake Word ("Hey Knight Guide")</Label>
-                  <Switch checked={wakeWordEnabled} onCheckedChange={setWakeWordEnabled} />
+                  <Switch checked={wakeWordEnabled} onCheckedChange={setWakeWordEnabled} disabled={!supported} />
                 </div>
                 
                 <div className="flex justify-end pt-2">
@@ -259,6 +280,28 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
               </div>
             )}
 
+            {/* Error Display */}
+            {listeningError && (
+              <div className="p-2 bg-destructive/10 text-destructive text-sm rounded-lg">
+                Mic error: {listeningError}
+              </div>
+            )}
+
+            {/* Text input fallback / manual message */}
+            <div className="flex gap-2 items-center">
+              <input
+                aria-label="Type a message"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { handleSendText(); } }}
+                className="flex-1 px-3 py-2 rounded-md border bg-background text-sm"
+                placeholder={supported ? 'Type a message or tap the mic' : 'Type a message (voice unavailable)'}
+              />
+              <Button size="sm" onClick={handleSendText} disabled={!inputText.trim()}>
+                Send
+              </Button>
+            </div>
+
             {/* Controls */}
             <div className="flex justify-center gap-4">
               <Button
@@ -266,8 +309,16 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
                 size="lg"
                 className="rounded-full h-12 w-12"
                 onClick={handleMicClick}
+                disabled={!supported}
+                title={!supported ? 'Speech recognition not supported in this browser' : undefined}
               >
-                {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                {!supported ? (
+                  <MicOff className="h-5 w-5" />
+                ) : isListening ? (
+                  <MicOff className="h-5 w-5" />
+                ) : (
+                  <Mic className="h-5 w-5" />
+                )}
               </Button>
               
               {isSpeaking && (
