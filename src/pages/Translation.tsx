@@ -5,31 +5,96 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, ArrowRightLeft, Mic, MicOff, Volume2, Hand, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRightLeft, Mic, MicOff, Volume2, Hand, Loader2, Play, ExternalLink } from 'lucide-react';
 import { useVoiceAssistant, SUPPORTED_LANGUAGES } from '@/hooks/useVoiceAssistant';
 import PageNarrator from '@/components/PageNarrator';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-// Sign language hand gesture images (using Unicode signs as placeholders)
-const SIGN_LANGUAGE_GESTURES: Record<string, string[]> = {
-  'hello': ['👋'],
-  'thank you': ['🙏'],
-  'please': ['🤲'],
-  'yes': ['👍'],
-  'no': ['👎'],
-  'help': ['🆘', '👐'],
-  'i love you': ['🤟'],
-  'good': ['👌'],
-  'bad': ['👎'],
-  'sorry': ['😔', '🙏'],
-  'goodbye': ['👋', '😊'],
-  'name': ['👆', '✍️'],
-  'water': ['💧', '🤲'],
-  'food': ['🍽️', '👄'],
-  'bathroom': ['🚻'],
-  'hospital': ['🏥', '➡️'],
-  'emergency': ['🚨', '🆘'],
-  'wheelchair': ['♿'],
+// ASL sign language with YouTube video links for each sign
+const ASL_SIGNS: Record<string, { emoji: string; videoUrl: string; description: string }> = {
+  'hello': { emoji: '👋', videoUrl: 'https://www.youtube.com/watch?v=HYIlNPQT3Ek', description: 'Wave hand near forehead' },
+  'hi': { emoji: '👋', videoUrl: 'https://www.youtube.com/watch?v=HYIlNPQT3Ek', description: 'Wave hand near forehead' },
+  'thank you': { emoji: '🙏', videoUrl: 'https://www.youtube.com/watch?v=fxnPfKgF5E8', description: 'Touch chin, move hand forward' },
+  'thanks': { emoji: '🙏', videoUrl: 'https://www.youtube.com/watch?v=fxnPfKgF5E8', description: 'Touch chin, move hand forward' },
+  'please': { emoji: '🤲', videoUrl: 'https://www.youtube.com/watch?v=0LKvpMBwJzw', description: 'Circular motion on chest' },
+  'yes': { emoji: '👍', videoUrl: 'https://www.youtube.com/watch?v=pKsVbQbqjn0', description: 'Fist nodding up and down' },
+  'no': { emoji: '👎', videoUrl: 'https://www.youtube.com/watch?v=KWYNGLhXh-k', description: 'Index and middle finger tap thumb' },
+  'help': { emoji: '🆘', videoUrl: 'https://www.youtube.com/watch?v=6x3kcG0tWJU', description: 'Thumb up on palm, lift up' },
+  'i love you': { emoji: '🤟', videoUrl: 'https://www.youtube.com/watch?v=1ihOFRxJwZQ', description: 'Pinky, index, thumb extended' },
+  'love': { emoji: '❤️', videoUrl: 'https://www.youtube.com/watch?v=8eW_-cMq7vs', description: 'Cross arms over chest' },
+  'good': { emoji: '👌', videoUrl: 'https://www.youtube.com/watch?v=3xNp8KzflNg', description: 'Touch chin, move hand down' },
+  'bad': { emoji: '👎', videoUrl: 'https://www.youtube.com/watch?v=MZlnrlPGUuM', description: 'Touch chin, flip hand down' },
+  'sorry': { emoji: '😔', videoUrl: 'https://www.youtube.com/watch?v=8sAEoQz4xDk', description: 'Fist circles on chest' },
+  'excuse me': { emoji: '🙏', videoUrl: 'https://www.youtube.com/watch?v=PB8v6eLpKAU', description: 'Brush fingers across palm' },
+  'goodbye': { emoji: '👋', videoUrl: 'https://www.youtube.com/watch?v=Xp0LTdgVqpM', description: 'Open-close hand wave' },
+  'bye': { emoji: '👋', videoUrl: 'https://www.youtube.com/watch?v=Xp0LTdgVqpM', description: 'Open-close hand wave' },
+  'name': { emoji: '✍️', videoUrl: 'https://www.youtube.com/watch?v=L1fGMHB4TqE', description: 'Tap two fingers together' },
+  'my name': { emoji: '✍️', videoUrl: 'https://www.youtube.com/watch?v=L1fGMHB4TqE', description: 'Point to self, then tap fingers' },
+  'what': { emoji: '❓', videoUrl: 'https://www.youtube.com/watch?v=OJqEfW0DT_c', description: 'Shake index finger side to side' },
+  'where': { emoji: '📍', videoUrl: 'https://www.youtube.com/watch?v=wq1zQDlVfhU', description: 'Point index finger, shake' },
+  'when': { emoji: '⏰', videoUrl: 'https://www.youtube.com/watch?v=H_LfuLLIhWE', description: 'Circle index around other index' },
+  'who': { emoji: '👤', videoUrl: 'https://www.youtube.com/watch?v=l-zRYr1g8X4', description: 'Circle thumb near chin' },
+  'why': { emoji: '🤔', videoUrl: 'https://www.youtube.com/watch?v=7tN_EkpAlZA', description: 'Touch forehead, Y handshape' },
+  'how': { emoji: '❓', videoUrl: 'https://www.youtube.com/watch?v=J_2rIU0_jsA', description: 'Knuckles together, roll forward' },
+  'water': { emoji: '💧', videoUrl: 'https://www.youtube.com/watch?v=PjLvS-MJNkE', description: 'W shape taps chin' },
+  'food': { emoji: '🍽️', videoUrl: 'https://www.youtube.com/watch?v=DlMgkLdqFZI', description: 'Fingertips to mouth' },
+  'eat': { emoji: '🍽️', videoUrl: 'https://www.youtube.com/watch?v=DlMgkLdqFZI', description: 'Fingertips to mouth' },
+  'drink': { emoji: '🥤', videoUrl: 'https://www.youtube.com/watch?v=vYl2eo3OSBU', description: 'Thumb to mouth, tilt hand' },
+  'bathroom': { emoji: '🚻', videoUrl: 'https://www.youtube.com/watch?v=hWSB9d5VbnA', description: 'Shake T handshape' },
+  'restroom': { emoji: '🚻', videoUrl: 'https://www.youtube.com/watch?v=hWSB9d5VbnA', description: 'Shake T handshape' },
+  'toilet': { emoji: '🚻', videoUrl: 'https://www.youtube.com/watch?v=hWSB9d5VbnA', description: 'Shake T handshape' },
+  'hospital': { emoji: '🏥', videoUrl: 'https://www.youtube.com/watch?v=CY0E1CzLVBQ', description: 'Draw cross on upper arm' },
+  'doctor': { emoji: '👨‍⚕️', videoUrl: 'https://www.youtube.com/watch?v=RLXz_IA-5zA', description: 'Tap wrist with fingers' },
+  'nurse': { emoji: '👩‍⚕️', videoUrl: 'https://www.youtube.com/watch?v=iVNmR5Y-lJw', description: 'N shape on wrist pulse' },
+  'medicine': { emoji: '💊', videoUrl: 'https://www.youtube.com/watch?v=cJVp_Fm97ZY', description: 'Middle finger circles palm' },
+  'pain': { emoji: '😣', videoUrl: 'https://www.youtube.com/watch?v=XmxQYUZlZ8Y', description: 'Index fingers point, twist' },
+  'hurt': { emoji: '🤕', videoUrl: 'https://www.youtube.com/watch?v=XmxQYUZlZ8Y', description: 'Index fingers point, twist' },
+  'sick': { emoji: '🤒', videoUrl: 'https://www.youtube.com/watch?v=QeOsmwKHgEs', description: 'Middle fingers touch head and stomach' },
+  'emergency': { emoji: '🚨', videoUrl: 'https://www.youtube.com/watch?v=k_4n8Z6Wh2w', description: 'E handshape, shake side to side' },
+  'call': { emoji: '📞', videoUrl: 'https://www.youtube.com/watch?v=3y8q7TnHGGE', description: 'Y hand to ear' },
+  'phone': { emoji: '📱', videoUrl: 'https://www.youtube.com/watch?v=3y8q7TnHGGE', description: 'Y hand to ear' },
+  'wheelchair': { emoji: '♿', videoUrl: 'https://www.youtube.com/watch?v=5wjb4LGqnLc', description: 'Bent fingers move forward' },
+  'deaf': { emoji: '🧏', videoUrl: 'https://www.youtube.com/watch?v=rCXRVNDXmMQ', description: 'Point to ear, then mouth' },
+  'blind': { emoji: '👁️', videoUrl: 'https://www.youtube.com/watch?v=mME87fL6vgE', description: 'V fingers from eyes down' },
+  'friend': { emoji: '🤝', videoUrl: 'https://www.youtube.com/watch?v=N_YnuJuMf5M', description: 'Hook index fingers together' },
+  'family': { emoji: '👨‍👩‍👧‍👦', videoUrl: 'https://www.youtube.com/watch?v=bDJ-cC8IQZY', description: 'F handshapes circle forward' },
+  'mother': { emoji: '👩', videoUrl: 'https://www.youtube.com/watch?v=d3Kc9Gw0-q4', description: 'Open 5 hand, thumb on chin' },
+  'mom': { emoji: '👩', videoUrl: 'https://www.youtube.com/watch?v=d3Kc9Gw0-q4', description: 'Open 5 hand, thumb on chin' },
+  'father': { emoji: '👨', videoUrl: 'https://www.youtube.com/watch?v=PV1P8NGWm3Q', description: 'Open 5 hand, thumb on forehead' },
+  'dad': { emoji: '👨', videoUrl: 'https://www.youtube.com/watch?v=PV1P8NGWm3Q', description: 'Open 5 hand, thumb on forehead' },
+  'home': { emoji: '🏠', videoUrl: 'https://www.youtube.com/watch?v=M5u8R8mOFhw', description: 'Flat O to cheek, then jaw' },
+  'work': { emoji: '💼', videoUrl: 'https://www.youtube.com/watch?v=u3qCgIQ4ZzI', description: 'Tap fist on other fist' },
+  'school': { emoji: '🏫', videoUrl: 'https://www.youtube.com/watch?v=ORq8sHSFlNE', description: 'Clap hands twice' },
+  'learn': { emoji: '📚', videoUrl: 'https://www.youtube.com/watch?v=x3n4_Yb8m6Q', description: 'Grab from palm to forehead' },
+  'understand': { emoji: '💡', videoUrl: 'https://www.youtube.com/watch?v=Fg6X2-hc3pU', description: 'Flick index finger up near temple' },
+  'dont understand': { emoji: '❌', videoUrl: 'https://www.youtube.com/watch?v=HmgQ8N57FHI', description: 'Flick down near temple' },
+  'again': { emoji: '🔄', videoUrl: 'https://www.youtube.com/watch?v=6wqAJGmG9yQ', description: 'Bent hand arcs to flat palm' },
+  'more': { emoji: '➕', videoUrl: 'https://www.youtube.com/watch?v=cAZN-2_7-ug', description: 'Flat O hands tap together' },
+  'stop': { emoji: '🛑', videoUrl: 'https://www.youtube.com/watch?v=h7_1WpI0W6Y', description: 'Flat hand chops other palm' },
+  'wait': { emoji: '⏳', videoUrl: 'https://www.youtube.com/watch?v=nIIYRr8n1IM', description: 'Wiggle fingers of both hands' },
+  'slow': { emoji: '🐢', videoUrl: 'https://www.youtube.com/watch?v=uQ2lKB3mLAI', description: 'Slide hand slowly up arm' },
+  'fast': { emoji: '⚡', videoUrl: 'https://www.youtube.com/watch?v=4YJFvQlw1rE', description: 'Pull hands back quickly' },
+  'happy': { emoji: '😊', videoUrl: 'https://www.youtube.com/watch?v=cNVhPMFxCqk', description: 'Brush chest upward twice' },
+  'sad': { emoji: '😢', videoUrl: 'https://www.youtube.com/watch?v=nJMVYJG0TaM', description: 'Drag hands down face' },
+  'tired': { emoji: '😴', videoUrl: 'https://www.youtube.com/watch?v=GShYHTZrOjg', description: 'Bent hands drop from chest' },
+  'hungry': { emoji: '😋', videoUrl: 'https://www.youtube.com/watch?v=Vj8U0aYpZpY', description: 'C hand moves down from throat' },
+  'thirsty': { emoji: '🥵', videoUrl: 'https://www.youtube.com/watch?v=rN6OiR9xMvQ', description: 'Index traces down throat' },
+  'hot': { emoji: '🥵', videoUrl: 'https://www.youtube.com/watch?v=kF8Zn7TLQRA', description: 'Claw hand from mouth, twist away' },
+  'cold': { emoji: '🥶', videoUrl: 'https://www.youtube.com/watch?v=Qf7NB7EqMv8', description: 'Fists shake like shivering' },
+  'big': { emoji: '📏', videoUrl: 'https://www.youtube.com/watch?v=_kMRYk-A0u4', description: 'L hands move apart' },
+  'small': { emoji: '🤏', videoUrl: 'https://www.youtube.com/watch?v=3P8pWLqNIQY', description: 'Flat hands move closer' },
+  'money': { emoji: '💰', videoUrl: 'https://www.youtube.com/watch?v=kOxTN-N5o8s', description: 'Tap back of hand on palm' },
+  'time': { emoji: '⏰', videoUrl: 'https://www.youtube.com/watch?v=Kj7w0SvyKQo', description: 'Tap wrist with index finger' },
+  'today': { emoji: '📅', videoUrl: 'https://www.youtube.com/watch?v=4J9J-RKJM-U', description: 'Y hands drop down together' },
+  'tomorrow': { emoji: '📆', videoUrl: 'https://www.youtube.com/watch?v=k3xmLOPR1nY', description: 'Thumb on cheek, arc forward' },
+  'yesterday': { emoji: '📆', videoUrl: 'https://www.youtube.com/watch?v=VdC-cD4-M6w', description: 'Thumb to cheek, arc back' },
+  'now': { emoji: '👇', videoUrl: 'https://www.youtube.com/watch?v=Nx9LvQOWvHw', description: 'Y hands drop down together' },
+  'later': { emoji: '🕐', videoUrl: 'https://www.youtube.com/watch?v=dZxE6iBXiYw', description: 'L hand tilts forward' },
 };
+
+// Get all available phrases for display
+const AVAILABLE_PHRASES = Object.keys(ASL_SIGNS).sort();
 
 const Translation: React.FC = () => {
   const [sourceLanguage, setSourceLanguage] = useState('en-US');
@@ -37,9 +102,10 @@ const Translation: React.FC = () => {
   const [sourceText, setSourceText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
-  const [signLanguageOutput, setSignLanguageOutput] = useState<string[]>([]);
+  const [signLanguageOutput, setSignLanguageOutput] = useState<Array<{ word: string; emoji: string; videoUrl: string; description: string }>>([]);
   const [currentGestureIndex, setCurrentGestureIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<{ word: string; url: string } | null>(null);
 
   const {
     speak,
@@ -52,48 +118,72 @@ const Translation: React.FC = () => {
     setSettings,
   } = useVoiceAssistant();
 
-  // Simple translation using browser's built-in (fallback to mock)
+  // Real translation using Lovable AI
   const translateText = useCallback(async (text: string, from: string, to: string): Promise<string> => {
     setIsTranslating(true);
     
-    // Simulate translation delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Mock translations for demo (in production, use Google Translate API)
-    const mockTranslations: Record<string, Record<string, string>> = {
-      'hello': { 'es-ES': 'hola', 'fr-FR': 'bonjour', 'de-DE': 'hallo', 'it-IT': 'ciao', 'ja-JP': 'こんにちは', 'zh-CN': '你好', 'hi-IN': 'नमस्ते' },
-      'thank you': { 'es-ES': 'gracias', 'fr-FR': 'merci', 'de-DE': 'danke', 'it-IT': 'grazie', 'ja-JP': 'ありがとう', 'zh-CN': '谢谢', 'hi-IN': 'धन्यवाद' },
-      'help': { 'es-ES': 'ayuda', 'fr-FR': 'aide', 'de-DE': 'hilfe', 'it-IT': 'aiuto', 'ja-JP': '助けて', 'zh-CN': '帮助', 'hi-IN': 'मदद' },
-      'where is the hospital': { 'es-ES': '¿Dónde está el hospital?', 'fr-FR': 'Où est l\'hôpital?', 'de-DE': 'Wo ist das Krankenhaus?', 'it-IT': 'Dov\'è l\'ospedale?', 'ja-JP': '病院はどこですか？', 'zh-CN': '医院在哪里？', 'hi-IN': 'अस्पताल कहाँ है?' },
-      'i need wheelchair access': { 'es-ES': 'Necesito acceso para silla de ruedas', 'fr-FR': 'J\'ai besoin d\'un accès en fauteuil roulant', 'de-DE': 'Ich brauche Rollstuhlzugang', 'it-IT': 'Ho bisogno di accesso per sedie a rotelle' },
-    };
+    try {
+      const { data, error } = await supabase.functions.invoke('translate', {
+        body: { text, sourceLanguage: from, targetLanguage: to }
+      });
 
-    const lowerText = text.toLowerCase();
-    const translation = mockTranslations[lowerText]?.[to];
-    
-    setIsTranslating(false);
-    return translation || `[${to.split('-')[0].toUpperCase()}] ${text}`;
+      if (error) {
+        throw error;
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      return data.translation;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Translation error:', error);
+      }
+      toast.error('Translation failed. Please try again.');
+      return '';
+    } finally {
+      setIsTranslating(false);
+    }
   }, []);
 
-  // Convert text to sign language gestures
+  // Convert text to sign language with video links
   const textToSignLanguage = useCallback((text: string) => {
-    const words = text.toLowerCase().split(/\s+/);
-    const gestures: string[] = [];
+    const words = text.toLowerCase().trim();
+    const results: Array<{ word: string; emoji: string; videoUrl: string; description: string }> = [];
     
-    // Check for known phrases first
-    for (const [phrase, signs] of Object.entries(SIGN_LANGUAGE_GESTURES)) {
-      if (text.toLowerCase().includes(phrase)) {
-        gestures.push(...signs);
+    // First check for exact phrase matches
+    const sortedPhrases = Object.keys(ASL_SIGNS).sort((a, b) => b.length - a.length);
+    let remainingText = words;
+    
+    for (const phrase of sortedPhrases) {
+      if (remainingText.includes(phrase)) {
+        const sign = ASL_SIGNS[phrase];
+        results.push({
+          word: phrase,
+          emoji: sign.emoji,
+          videoUrl: sign.videoUrl,
+          description: sign.description
+        });
+        remainingText = remainingText.replace(phrase, '').trim();
       }
     }
     
-    // If no matches, show letter-by-letter fingerspelling concept
-    if (gestures.length === 0) {
-      // Show hand emoji for each word as placeholder
-      words.forEach(() => gestures.push('✋'));
+    // Check individual words that weren't matched
+    const remainingWords = remainingText.split(/\s+/).filter(w => w.length > 0);
+    for (const word of remainingWords) {
+      if (ASL_SIGNS[word]) {
+        const sign = ASL_SIGNS[word];
+        results.push({
+          word,
+          emoji: sign.emoji,
+          videoUrl: sign.videoUrl,
+          description: sign.description
+        });
+      }
     }
     
-    return gestures;
+    return results;
   }, []);
 
   // Animate sign language gestures
@@ -107,7 +197,7 @@ const Translation: React.FC = () => {
           }
           return prev + 1;
         });
-      }, 1000);
+      }, 1500);
       
       return () => clearInterval(timer);
     }
@@ -124,6 +214,9 @@ const Translation: React.FC = () => {
     if (!sourceText.trim()) return;
     
     const gestures = textToSignLanguage(sourceText);
+    if (gestures.length === 0) {
+      toast.info('No matching signs found. Try common words like: hello, thank you, help, hospital, emergency');
+    }
     setSignLanguageOutput(gestures);
     setCurrentGestureIndex(0);
     setIsAnimating(true);
@@ -157,6 +250,10 @@ const Translation: React.FC = () => {
       setSettings({ ...settings, language: targetLanguage });
       speak(translatedText);
     }
+  };
+
+  const openVideoInNewTab = (videoUrl: string) => {
+    window.open(videoUrl, '_blank', 'noopener,noreferrer');
   };
 
   const pageDescription = "Translation page for sign language, voice, and text translation in multiple languages.";
@@ -194,7 +291,7 @@ const Translation: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Text Translation</CardTitle>
-                <CardDescription>Translate text between multiple languages</CardDescription>
+                <CardDescription>Translate text between multiple languages using AI</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Language Selectors */}
@@ -344,6 +441,19 @@ const Translation: React.FC = () => {
                     </Card>
                   )}
 
+                  {sourceText && !isListening && (
+                    <Button onClick={handleTranslate} disabled={isTranslating} className="w-full max-w-md">
+                      {isTranslating ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Translating...
+                        </>
+                      ) : (
+                        'Translate'
+                      )}
+                    </Button>
+                  )}
+
                   {translatedText && (
                     <Card className="w-full">
                       <CardContent className="pt-4 flex items-center justify-between">
@@ -368,13 +478,13 @@ const Translation: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Hand className="h-5 w-5" />
-                  Sign Language Translation
+                  ASL Sign Language Translation
                 </CardTitle>
-                <CardDescription>Convert text to sign language gestures</CardDescription>
+                <CardDescription>Convert text to American Sign Language with video demonstrations</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Textarea
-                  placeholder="Enter text to convert to sign language... (Try: hello, thank you, help, hospital, emergency)"
+                  placeholder="Enter text to convert to sign language..."
                   value={sourceText}
                   onChange={(e) => setSourceText(e.target.value)}
                   className="min-h-24"
@@ -390,29 +500,64 @@ const Translation: React.FC = () => {
                   <div className="space-y-4">
                     {/* Animated Current Gesture */}
                     <div className="flex justify-center items-center min-h-48 bg-muted rounded-lg">
-                      <div className="text-center">
-                        <span className="text-8xl animate-bounce" key={currentGestureIndex}>
-                          {signLanguageOutput[currentGestureIndex]}
+                      <div className="text-center space-y-2">
+                        <span className="text-8xl animate-bounce block" key={currentGestureIndex}>
+                          {signLanguageOutput[currentGestureIndex]?.emoji}
                         </span>
-                        <p className="text-sm text-muted-foreground mt-4">
-                          Gesture {currentGestureIndex + 1} of {signLanguageOutput.length}
+                        <p className="text-xl font-semibold text-foreground">
+                          "{signLanguageOutput[currentGestureIndex]?.word}"
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {signLanguageOutput[currentGestureIndex]?.description}
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openVideoInNewTab(signLanguageOutput[currentGestureIndex]?.videoUrl)}
+                          className="mt-2"
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          Watch Video
+                          <ExternalLink className="h-3 w-3 ml-2" />
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-4">
+                          Sign {currentGestureIndex + 1} of {signLanguageOutput.length}
                         </p>
                       </div>
                     </div>
 
-                    {/* All Gestures */}
-                    <div className="flex flex-wrap gap-4 justify-center p-4 bg-muted/50 rounded-lg">
+                    {/* All Gestures Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-4 bg-muted/50 rounded-lg">
                       {signLanguageOutput.map((gesture, index) => (
-                        <div
+                        <Card
                           key={index}
-                          className={`text-4xl p-4 rounded-lg transition-all ${
+                          className={`cursor-pointer transition-all hover:shadow-md ${
                             index === currentGestureIndex 
-                              ? 'bg-primary text-primary-foreground scale-125' 
-                              : 'bg-card'
+                              ? 'ring-2 ring-primary bg-primary/10' 
+                              : ''
                           }`}
+                          onClick={() => {
+                            setCurrentGestureIndex(index);
+                            setIsAnimating(false);
+                          }}
                         >
-                          {gesture}
-                        </div>
+                          <CardContent className="p-3 text-center space-y-1">
+                            <span className="text-3xl block">{gesture.emoji}</span>
+                            <p className="text-sm font-medium truncate">{gesture.word}</p>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full text-xs"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openVideoInNewTab(gesture.videoUrl);
+                              }}
+                            >
+                              <Play className="h-3 w-3 mr-1" />
+                              Video
+                            </Button>
+                          </CardContent>
+                        </Card>
                       ))}
                     </div>
 
@@ -436,28 +581,38 @@ const Translation: React.FC = () => {
                   </div>
                 )}
 
-                {/* Common Phrases */}
-                <div className="pt-4 border-t">
-                  <h4 className="font-medium mb-3">Quick Phrases</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {['Hello', 'Thank you', 'Help', 'Hospital', 'Emergency', 'Wheelchair', 'Bathroom'].map((phrase) => (
-                      <Button
-                        key={phrase}
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => {
-                          setSourceText(phrase);
-                          const gestures = textToSignLanguage(phrase);
-                          setSignLanguageOutput(gestures);
-                          setCurrentGestureIndex(0);
-                          setIsAnimating(true);
-                        }}
-                      >
-                        {phrase}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                {/* Available Phrases */}
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Available ASL Signs ({AVAILABLE_PHRASES.length})</CardTitle>
+                    <CardDescription>Click any phrase to see its sign language video</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2 max-h-64 overflow-y-auto">
+                      {AVAILABLE_PHRASES.map((phrase) => (
+                        <Button
+                          key={phrase}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => {
+                            setSourceText(phrase);
+                            const sign = ASL_SIGNS[phrase];
+                            setSignLanguageOutput([{
+                              word: phrase,
+                              emoji: sign.emoji,
+                              videoUrl: sign.videoUrl,
+                              description: sign.description
+                            }]);
+                            setCurrentGestureIndex(0);
+                          }}
+                        >
+                          {ASL_SIGNS[phrase].emoji} {phrase}
+                        </Button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </CardContent>
             </Card>
           </TabsContent>
