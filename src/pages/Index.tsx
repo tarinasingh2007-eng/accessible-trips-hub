@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { parsePackagesCSV } from "@/lib/csvParser";
 import type { TravelPackage } from "@/types/travel";
 import PackageCard from "@/components/PackageCard";
 import SearchFilters from "@/components/SearchFilters";
 import { Button } from "@/components/ui/button";
-import { Heart, Shield, Accessibility, Search, User, Calendar, LogOut } from "lucide-react";
+import { Heart, Shield, Accessibility, Search, User, Calendar, LogOut, MapPin, Activity, Languages, ArrowLeft, ArrowRight, X } from "lucide-react";
 import heroImage from "@/assets/hero-travel.jpg";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ import {
 
 const Index = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [packages, setPackages] = useState<TravelPackage[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<TravelPackage[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -101,20 +102,48 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Browser Navigation Bar */}
+      <div className="bg-muted/50 border-b px-4 py-2 flex items-center gap-2 sticky top-0 z-50">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} title="Go Back">
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => navigate(1)} title="Go Forward">
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+        <div className="flex-1 bg-background rounded-md px-3 py-1.5 text-sm text-muted-foreground truncate">
+          Travel Assist - Accessible Travel
+        </div>
+        <Button variant="ghost" size="icon" onClick={() => window.close()} title="Close Tab">
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+
       {/* Navigation */}
-      <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b sticky top-0 z-50">
+      <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b sticky top-12 z-40">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Travel Assist</h1>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+            <Link to="/accessibility-map" className="flex items-center gap-1 text-foreground hover:text-primary transition-colors text-sm">
+              <MapPin className="h-4 w-4" />
+              <span className="hidden sm:inline">Map</span>
+            </Link>
+            <Link to="/health-vitals" className="flex items-center gap-1 text-foreground hover:text-primary transition-colors text-sm">
+              <Activity className="h-4 w-4" />
+              <span className="hidden sm:inline">Vitals</span>
+            </Link>
+            <Link to="/translation" className="flex items-center gap-1 text-foreground hover:text-primary transition-colors text-sm">
+              <Languages className="h-4 w-4" />
+              <span className="hidden sm:inline">Translate</span>
+            </Link>
             {user ? (
               <>
-                <Link to="/favorites" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+                <Link to="/favorites" className="flex items-center gap-1 text-foreground hover:text-primary transition-colors text-sm">
                   <Heart className="h-4 w-4" />
                   <span className="hidden sm:inline">Favorites</span>
                 </Link>
-                <Link to="/bookings" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+                <Link to="/bookings" className="flex items-center gap-1 text-foreground hover:text-primary transition-colors text-sm">
                   <Calendar className="h-4 w-4" />
-                  <span className="hidden sm:inline">My Bookings</span>
+                  <span className="hidden sm:inline">Bookings</span>
                 </Link>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -137,7 +166,7 @@ const Index = () => {
                 </DropdownMenu>
               </>
             ) : (
-              <Button asChild>
+              <Button asChild size="sm">
                 <Link to="/auth">Sign In</Link>
               </Button>
             )}

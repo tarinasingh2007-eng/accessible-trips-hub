@@ -143,12 +143,15 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
         <Card className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 shadow-xl">
           <CardHeader className="flex flex-row items-center justify-between py-3">
             <CardTitle className="text-lg">Knight Guide</CardTitle>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="icon" onClick={() => setShowSettings(!showSettings)}>
+            <div className="flex gap-1">
+              <Button variant="ghost" size="icon" onClick={() => setShowSettings(!showSettings)} title="Settings">
                 <Settings className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={speakPageContent}>
+              <Button variant="ghost" size="icon" onClick={speakPageContent} title="Read Page">
                 <Volume2 className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} title="Close">
+                <X className="h-4 w-4" />
               </Button>
             </div>
           </CardHeader>
@@ -157,6 +160,10 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
             {/* Settings Panel */}
             {showSettings && (
               <div className="space-y-4 p-3 bg-muted rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-sm font-semibold">Settings</Label>
+                </div>
+                
                 <div className="space-y-2">
                   <Label>Language</Label>
                   <Select
@@ -206,6 +213,12 @@ const VoiceAssistantWidget: React.FC<VoiceAssistantWidgetProps> = ({ pageContext
                 <div className="flex items-center justify-between">
                   <Label>Wake Word ("Hey Knight Guide")</Label>
                   <Switch checked={wakeWordEnabled} onCheckedChange={setWakeWordEnabled} />
+                </div>
+                
+                <div className="flex justify-end pt-2">
+                  <Button size="sm" onClick={() => setShowSettings(false)}>
+                    Save & Close
+                  </Button>
                 </div>
               </div>
             )}
